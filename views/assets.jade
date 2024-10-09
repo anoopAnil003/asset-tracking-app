@@ -1,0 +1,176 @@
+extends layout
+
+block content
+  h1 Asset Master
+
+  // Filter and Search Form
+  form(method="get", action="/assets", class="form-inline mb-3")
+    .form-group
+      label(for="assetType") Asset Type:
+        select#category.form-control(name="assetType", required)
+                
+                each category in categories
+                  
+                  option(value=category.name)= category.name
+                  
+
+
+    .form-group.ml-2
+      label(for="make") Make:
+      input.form-control(name="make", type="text")
+    .form-group.ml-2
+      label(for="model") Model:
+      input.form-control(name="model", type="text")
+    button.btn.btn-primary.ml-2(type="submit") Filter
+
+  // Add Asset Button
+  button.btn.btn-success(type="button", data-toggle="modal", data-target="#addAssetModal") Add Asset
+
+  // Asset Table
+  .table-responsive
+    table#assetTable.table.table-striped.table-bordered
+      thead
+        tr
+          th Serial Number
+          th Unique ID
+          th Make
+          th Model
+          th Asset Type
+          th Status
+          th Branch
+          th Value
+            //-th Issued To
+          th Actions
+      tbody
+        each asset in assets
+          
+            tr
+              td #{asset.serialNumber}
+              td #{asset.uniqueId}
+              td #{asset.make}
+              td #{asset.model}
+              td #{asset.assetType}
+              td #{asset.status}
+              td #{asset.branch}
+              td #{asset.value}
+                //-td= asset.employee ? asset.employeeId : 'Not Issued'
+                
+              td
+                button.btn.btn-warning(type="button", data-toggle="modal", data-target=`#editAssetModal${asset.id}`) Edit
+                
+                form(method="post", action=`/assets/delete/${asset.id}`, style="display:inline")
+                  button.btn.btn-danger(type="submit") Delete
+                
+                if asset.status === 'active'
+                  a.btn.btn-primary(href=`/issue-asset/`) Issue
+                else
+                 // Issued to #{asset.employee.name}
+                button.btn.btn-danger(type="button", data-toggle="modal", data-target=`#scrapAssetModal${asset.id}`) Scrap
+             
+
+  // Add Asset Modal
+  .modal.fade(id="addAssetModal", tabindex="-1", role="dialog", aria-labelledby="addAssetModalLabel", aria-hidden="true")
+    .modal-dialog(role="document")
+      .modal-content
+        .modal-header
+          h5.modal-title Add Asset
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden="true") ×
+        .modal-body
+          form(method="post", action="/assets/add")
+            .form-group
+              label(for="serialNumber") Serial Number:
+              input#serialNumber.form-control(name="serialNumber", type="text", required)
+            .form-group
+              label(for="uniqueId") Unique ID:
+              input#uniqueId.form-control(name="uniqueId", type="text", required)
+            .form-group
+              label(for="make") Make:
+              input#make.form-control(name="make", type="text", required)
+            .form-group
+              label(for="model") Model:
+              input#model.form-control(name="model", type="text", required)
+            .form-group
+              label(for="assetType") Asset Type:
+              select#category.form-control(name="assetType", required)
+                each category in categories
+                  option(value=category.name)= category.name
+
+
+
+            .form-group
+              label(for="branch") Branch:
+              input#branch.form-control(name="branch", type="text", required)
+            .form-group
+              label(for="value") Value:
+              input#value.form-control(name="value", type="number", step="0.01", required)
+            .form-group
+              label(for="status") Status:
+               select#status.form-control(name="status")
+                 option(value="active") Active
+                 option(value="inactive") Inactive
+            button.btn.btn-primary(type="submit") Add Asset
+  
+  //Modals for Editing Assets
+  each asset in assets
+    .modal.fade(id=`editAssetModal${asset.id}`, tabindex="-1", role="dialog")
+     .modal-dialog(role="document")
+        .modal-content
+          .modal-header
+            h5.modal-title Edit Asset #{asset.name}
+            button.close(type="button", data-dismiss="modal", aria-label="Close")
+              span(aria-hidden="true") ×
+          .modal-body
+            form(method="post", action=`/assets/edit/${asset.id}`)
+              .form-group
+                label(for="make") Make:
+                input#make.form-control(name="make", type="text", value=asset.make, required)
+              .form-group
+                label(for="model") Model:
+                input#model.form-control(name="model", type="text", value=asset.model, required)
+              .form-group
+                label(for="branch") Branch:
+                input#branch.form-control(name="branch", type="text", value=asset.branch, required)
+              //.form-group
+                label(for="assetType") Asset Type:
+                input#assetType.form-control(name="assetType", type="text", value=asset.assetType, required)
+              .form-group
+                label(for="value") Value:
+                input#value.form-control(name="value", type="text", value=asset.value, required)
+              .form-group
+                label(for="uniqueId") Unique ID:
+                input#uniqueId.form-control(name="uniqueId", type="text", value=asset.uniqueId, required)
+              .form-group
+                label(for="serialNumber") Serial Number:
+                input#serialNumber.form-control(name="serialNumber", type="text", value=asset.serialNumber, required)
+              .form-group
+                label(for="status") Status:
+                select#status.form-control(name="status")
+                  option(value="active", selected=asset.status ? true : false) Active
+                  option(value="inactive", selected=!asset.status ? true : false) Inactive
+              
+              button.btn.btn-primary(type="submit") Save Changes
+  
+  // Scrap Asset Modal
+  each asset in assets
+    if !asset.isScrapped
+      .modal.fade(id=`scrapAssetModal${asset.id}`, tabindex="-1", role="dialog", aria-labelledby="scrapAssetLabel", aria-hidden="true")
+        .modal-dialog(role="document")
+          .modal-content
+            .modal-header
+              h5.modal-title Scrap Asset #{asset.make} #{asset.model}
+              button.close(type="button", data-dismiss="modal", aria-label="Close")
+                span(aria-hidden="true") ×
+            .modal-body
+              p Are you sure you want to mark this asset as scrapped?
+            .modal-footer
+              form(method="post", action=`/assets/scrap/${asset.id}`)
+                button.btn.btn-danger(type="submit") Confirm Scrap
+                button.btn.btn-secondary(type="button", data-dismiss="modal") Cancel
+
+
+  // DataTable Initialization
+  script.
+    $(document).ready(function() {
+      $('#assetTable').DataTable();
+    });

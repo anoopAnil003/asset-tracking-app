@@ -1,0 +1,102 @@
+extends layout
+
+block content
+  h1 Employee Master
+  hr
+
+  // Search and Filter Section
+  .row
+    .col-md-6
+      form(method="get", action="/employees")
+        //.form-group
+          label(for="search") Search Employees by Name:
+          input#search.form-control(name="search", type="text", value=search, placeholder="Search by name...")
+          
+        .form-group
+          label(for="status") Filter by Status:
+          select#status.form-control(name="status")
+            option(value="") -- All --
+            option(value="active", selected=(status === 'active') ? true : false) Active
+            option(value="inactive", selected=(status === 'inactive') ? true : false) Inactive
+        button.btn.btn-primary(type="submit")  Filter 
+        button.btn.btn-success(type="button", data-toggle="modal", data-target="#addEmployeeModal") Add Employee
+
+  // Employee Table with DataTables
+  .table-responsive
+    table#employeeTable.table.table-bordered.table-striped
+      thead
+        tr
+          th Name
+          th Email
+          th Status
+          th Actions
+      tbody
+        each employee in employees
+          tr
+            td= employee.name
+            td= employee.email
+            td= employee.status ? 'Active' : 'Inactive'
+            td
+              //Employee Edit
+              button.btn.btn-secondary.btn-sm(type="button", data-toggle="modal", data-target=`#editEmployee${employee.id}`) Edit
+              //Employee Delete
+              form(method="post", action=`/employees/delete/${employee.id}`, style="display:inline")
+                button.btn.btn-danger(type="submit") Delete
+              
+  // Add Employee Modal
+  .modal.fade(id="addEmployeeModal", tabindex="-1", role="dialog", aria-labelledby="addEmployeeModalLabel", aria-hidden="true")
+    .modal-dialog(role="document")
+      .modal-content
+        .modal-header
+          h5.modal-title Add Employee
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden="true") ×
+        .modal-body
+          form(method="post", action="/employees/add")
+            .form-group
+              label(for="name") Name:
+              input#name.form-control(name="name", type="text", required)
+            .form-group
+              label(for="email") Email ID:
+              input#email.form-control(name="email", type="text", required)
+            .form-group
+              label(for="status") Status:
+               select#status.form-control(name="status")
+                 option(value="active") Active
+                 option(value="inactive") Inactive
+            button.btn.btn-primary(type="submit") Add Employee
+
+  // Edit Employee Modals for each employee
+  each employee in employees
+    .modal.fade(id=`editEmployee${employee.id}`, tabindex="-1", role="dialog", aria-labelledby="editEmployeeLabel", aria-hidden="true")
+      .modal-dialog(role="document")
+        .modal-content
+          .modal-header
+            h5.modal-title Edit Employee #{employee.name}
+            button.close(type="button", data-dismiss="modal", aria-label="Close")
+              span(aria-hidden="true") ×
+          .modal-body
+            form(method="post", action=`/employees/edit/${employee.id}`)
+              .form-group
+                label(for="name") Name:
+                input#name.form-control(name="name", type="text", value=employee.name, required)
+              .form-group
+                label(for="email") Email:
+                input#email.form-control(name="email", type="email", value=employee.email, required)
+              .form-group
+                label(for="status") Status:
+                select#status.form-control(name="status")
+                  option(value="active", selected=employee.status ? true : false) Active
+                  option(value="inactive", selected=!employee.status ? true : false) Inactive
+              button.btn.btn-primary(type="submit") Save Changes
+            
+            
+
+  // Initialize DataTables
+  script.
+    $(document).ready(function() {
+      $('#employeeTable').DataTable();
+    });
+
+
+

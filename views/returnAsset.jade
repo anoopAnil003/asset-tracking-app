@@ -1,0 +1,88 @@
+extends layout
+
+block content
+  h1= title
+
+ 
+  
+  // Table of issued assets pending return
+  table.table.table-striped.table-bordered
+    thead
+      tr
+        th Employee
+        th Asset Serial No
+        th Asset Type
+        th Asset Make/Model
+        th Issued Date
+        th Actions
+    tbody
+      if issuedAssets.length>0
+        each issuedAsset in issuedAssets
+          tr
+            td= issuedAsset.employee.name
+            td= issuedAsset.asset.serialNumber
+            td= issuedAsset.asset.assetType 
+            td #{issuedAsset.asset.make} / #{issuedAsset.asset.model}
+            
+            td= issuedAsset.issuedDate.toDateString()
+            td
+              // Return Asset button (to trigger return form modal)
+              button.btn.btn-primary(data-toggle="modal", data-target=`#returnAssetModal${issuedAsset.id}`) Return
+      else
+        tr
+          td(colspan="7") No assets have been issued.
+
+  // Modal for returning an asset
+  each issuedAsset in issuedAssets
+    .modal.fade(id=`returnAssetModal${issuedAsset.id}`, tabindex="-1", role="dialog")
+      .modal-dialog(role="document")
+        .modal-content
+          .modal-header
+            h5.modal-title Return Asset for #{issuedAsset.asset.name}
+            button.close(type="button", data-dismiss="modal", aria-label="Close")
+              span(aria-hidden="true") ×
+          .modal-body
+            form(method="post", action="/return-asset")
+              input(type="hidden", name="issuedAssetId", value=issuedAsset.id)
+              .form-group
+                label(for="returnReason") Reason for Return
+                select.form-control(name="returnReason", required)
+                  option(value="Upgrade") Upgrade
+                  option(value="Repair") Repair
+                  option(value="Resignation") Resignation
+                  option(value="Other") Other
+              .form-group
+                label(for="returnDate") Return Date
+                input.form-control(name="returnDate", type="date", required)
+              button.btn.btn-primary(type="submit") Return Asset
+
+  h2 Returned Asset History
+
+  table.table.table-striped.table-bordered
+    thead
+      tr
+        th Employee
+        th Serial Number
+        th Asset Make/Model
+        th Issued Date
+        th Returned Date
+        th Reason for Return
+    tbody
+      if returnedAssets.length>0
+        each returned in returnedAssets
+          tr
+            td #{returned.employee.name}
+            td #{returned.asset.serialNumber}
+            td #{returned.asset.make} / #{returned.asset.model}
+            td #{returned.issuedDate.toDateString()}
+            td #{returned.returnedDate ? returned.returnedDate.toDateString() : 'Not Returned'}
+            td #{returned.returnReason ? returned.returnReason.toString() : 'Not Returned'}
+      else
+        tr
+          td(colspan="6") No assets have been returned.
+
+  
+      
+    
+
+   

@@ -1,0 +1,41 @@
+doctype html
+html
+  head
+    title= title
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css")
+    script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js")
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js")
+    link(rel="stylesheet", href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css")
+
+    
+  body
+    .container-fluid
+      .row
+        // Sidebar for navigation, collapsible on small screens
+        .col-md-2.col-sm-12.bg-light.pt-3
+          h5 ASSET MANAGEMENT
+          ul.nav.flex-column
+            li.nav-item
+              a.nav-link(href='/employees') Employee Master
+            li.nav-item
+              a.nav-link(href='/assets') Asset Master
+            li.nav-item
+              a.nav-link(href='/categories') Asset Category Master
+            li.nav-item
+              a.nav-link(href='/stock-view') Stock View
+            li.nav-item
+              a.nav-link(href='/issue-asset') Issue Asset
+            li.nav-item
+              a.nav-link(href='/return-asset') Return Asset
+            li.nav-item
+              a.nav-link(href='/assets/scrapped') Scrap Asset Report
+            li.nav-item
+              a.nav-link(href='/asset-history') Asset History
+
+        // Main content section
+        .col-md-9.col-sm-12.pt-5
+          block content
+
+    script(src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js")

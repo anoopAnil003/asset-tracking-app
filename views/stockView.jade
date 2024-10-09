@@ -1,0 +1,27 @@
+// views/stockView.jade
+extends layout
+
+block content
+  h1= title 
+
+  // Table to display assets in stock
+  table#stockTable.table.table-striped.table-bordered
+    thead
+      tr
+        th Branch
+        th Asset Type
+        th Total Count
+        th Total Value
+    tbody
+      if branches.length > 0
+        each branch in branches
+          tr
+            td= branch.branch
+            td= branch.assetType
+            td= branch.dataValues.totalCount
+            td= 'Rs.' + parseFloat(branch.dataValues.totalValue).toFixed(2)
+
+  // Footer to display overall total
+  footer
+    p Total Assets : #{totalAssets} 
+    p Total Value : Rs.#{totalValue.toFixed(2)} 

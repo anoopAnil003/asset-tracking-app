@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "ap@1099*",
+    "database": "asset_tracking_db",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}

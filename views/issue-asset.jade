@@ -1,0 +1,50 @@
+// views/issue-asset.jade
+extends layout
+
+block content
+  h1= title
+
+  // Form to issue an asset
+  form(method="post", action="/issue-asset")
+    .form-group
+      label(for="employeeId") Select Employee:
+      select#employeeId.form-control(name="employeeId", required)
+        option(value="") -- Select Employee --
+        each employee in employees
+          option(value=employee.id)= employee.name
+
+    .form-group
+      label(for="assetId") Select Asset:
+      select#assetId.form-control(name="assetId", required)
+        option(value="") -- Select Asset --
+        each asset in assets
+          option(value=asset.id)= `${asset.assetType} (Serial: ${asset.serialNumber}/${asset.make}/${asset.model})`
+
+    button.btn.btn-primary(type="submit") Issue Asset
+
+  // Divider
+  hr
+
+  // Table to display issued assets
+  h2 Issued Assets
+
+  table.table.table-striped.table-bordered
+    thead
+      tr
+        th Employee
+        th Serial Number
+        th Asset Make/Model
+        th Issued Date
+        th Returned Date
+    tbody
+      if issuedAssets.length>0
+        each issued in issuedAssets
+          tr
+            td #{issued.employee.name}
+            td #{issued.asset.serialNumber}
+            td #{issued.asset.make} / #{issued.asset.model}
+            td #{issued.issuedDate.toDateString()}
+            td #{issued.returnedDate ? issued.returnedDate.toDateString() : 'Not Returned'}
+      else
+        tr
+          td(colspan="5") No assets have been issued.

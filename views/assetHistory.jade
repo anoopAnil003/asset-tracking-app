@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1= title 
+
+  // Table to display asset history
+  table.table.table-striped.table-bordered
+    thead
+      tr
+        th Asset ID
+        th Action
+        th Employee ID
+        th Description
+        th Date & Time
+    tbody
+      each history in histories
+        tr
+          td= history.assetId
+          td= history.action
+          td #{history.employeeId ? history.employeeId.toString() : 'N/A'}
+          
+          td #{history.description ? history.description.toString() : 'N/A'}
+          td= new Date(history.timestamp).toLocaleString()
+
+  
+          
+
+          

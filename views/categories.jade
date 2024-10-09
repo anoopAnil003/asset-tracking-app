@@ -1,0 +1,55 @@
+extends layout
+
+block content
+  h1 Asset Category Master
+
+  // Add Category Button
+  button.btn.btn-primary(type="button", data-toggle="modal", data-target="#addCategoryModal") Add Category
+
+  // Table of Asset Categories
+  table#categoryTable.table.table-striped
+    thead
+      tr
+        th Name
+        th Actions
+    tbody
+      each category in categories
+        tr
+          td= category.name
+          td
+            button.btn.btn-primary(type="button", data-toggle="modal", data-target=`#editCategoryModal${category.id}`) Edit
+            form(method="post", action=`/categories/delete/${category.id}`, style="display:inline")
+              button.btn.btn-danger(type="submit") Delete
+
+  // Add Category Modal
+  .modal.fade(id="addCategoryModal", tabindex="-1", role="dialog")
+    .modal-dialog(role="document")
+      .modal-content
+        .modal-header
+          h5.modal-title Add Category
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden="true") ×
+        .modal-body
+          form(method="post", action="/categories/add")
+            .form-group
+              label(for="name") Category Name:
+              input#name.form-control(name="name", type="text", required)
+            
+            button.btn.btn-primary(type="submit") Save Category
+
+  // Edit Category Modals for each category
+  each category in categories
+    .modal.fade(id=`editCategoryModal${category.id}`, tabindex="-1", role="dialog")
+      .modal-dialog(role="document")
+        .modal-content
+          .modal-header
+            h5.modal-title Edit Category #{category.name}
+            button.close(type="button", data-dismiss="modal", aria-label="Close")
+              span(aria-hidden="true") ×
+          .modal-body
+            form(method="post", action=`/categories/edit/${category.id}`)
+              .form-group
+                label(for="name") Category Name:
+                input#name.form-control(name="name", type="text", value=category.name, required)
+              
+              button.btn.btn-primary(type="submit") Save Changes

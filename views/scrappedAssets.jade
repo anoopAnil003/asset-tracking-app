@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  h1= title
+
+  table.table.table-striped.table-bordered
+    thead
+      tr
+        th Serial Number
+        th Asset Type
+        th Make/Model
+        th Value
+        th Action
+
+        
+        
+    tbody
+      if scrappedAssets.length > 0
+        each asset in scrappedAssets
+          tr
+            td= asset.serialNumber
+            td= asset.assetType
+            td #{asset.make}  / #{asset.model}
+            td= asset.value
+            td
+              form(method="post", action=`/scraped/delete/${asset.id}`, style="display:inline")
+                button.btn.btn-danger(type="submit") Delete
+      else
+        tr
+          td(colspan="5") No scraps have been issued.
+
